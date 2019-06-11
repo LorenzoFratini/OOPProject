@@ -9,16 +9,19 @@ import java.util.Scanner;
 
 import org.springframework.stereotype.Service;
 
+import filter.Filter;
+import filter.UseFilter;
 import model.Impresa;
 import model.Metadati;
 
 @Service 
-public class ImpresaService {
+public class ImpresaService implements Filter<Impresa,Object>{
 	String FileToParse="ImpreseOOP.csv";
 	final String DELIMITER=";";
-	ArrayList<Impresa> impresa=new ArrayList<Impresa>();
+	private ArrayList<Impresa> impresa=new ArrayList<Impresa>();
 	String type[]=new String[9];
 	String Descrizione[]=new String[9];
+	private UseFilter<Impresa> utils=new UseFilter<Impresa>();
 	//parsing dei dati dentro il costruttore
 	public ImpresaService() {
 		try {
@@ -73,4 +76,9 @@ public class ImpresaService {
 		
 		return metdat;
 	} 
+	
+	@Override
+	public ArrayList<Impresa> filterField(String fieldName, String operator, Object value) {
+		return (ArrayList<Impresa>) utils.select(impresa, fieldName, operator, value);
+	}
 }

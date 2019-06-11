@@ -21,6 +21,8 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 
+import service.ImpresaService;
+
 @Configuration
 @EnableAutoConfiguration
 @ComponentScan(basePackages= {"controller","service"})
@@ -78,6 +80,8 @@ public class ProgettoEsameImpreseApplication {
 					e.printStackTrace();
 				}
 				SpringApplication.run(ProgettoEsameImpreseApplication.class, args);
+				//ImpresaService impserv=new ImpresaService();
+				//System.out.println(impserv.filterField("NumImp", ">", 10000));
 			}
 
 }
