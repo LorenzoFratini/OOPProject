@@ -28,7 +28,7 @@ public class ImpresaController {
 	ArrayList<Impresa> out1=new ArrayList<Impresa>();
 	ArrayList<Impresa> out2=new ArrayList<Impresa>();
 	
-	
+	//Metodo per il parse della querystring
 	public void ParseQuery(String query) {
 		String[] token=query.split(":");
 		this.fieldName=token[0];
