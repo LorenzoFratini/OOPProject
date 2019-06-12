@@ -4,7 +4,10 @@ import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
 import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Scanner;
 
 import org.springframework.stereotype.Service;
@@ -13,6 +16,7 @@ import filter.Filter;
 import filter.UseFilter;
 import model.Impresa;
 import model.Metadati;
+import statistics.Statistiche;
 
 @Service 
 public class ImpresaService implements Filter<Impresa,Object>{
@@ -53,12 +57,13 @@ public class ImpresaService implements Filter<Impresa,Object>{
 			System.out.println(e.getMessage());
 		}
 	}
+	//------------------------------------------------------------
 	
 	public ArrayList<Impresa> getData() {
 		return impresa;
 		
 	}
-	
+	//-------------------------------------------------------------
 	public ArrayList<Metadati> getMetadati() {
 		 Field fld[] = Impresa.class.getDeclaredFields();
 		 ArrayList<Metadati> metdat=new ArrayList<Metadati>();
@@ -76,9 +81,59 @@ public class ImpresaService implements Filter<Impresa,Object>{
 		
 		return metdat;
 	} 
-	
+	//-----------------------------------------------------------------
 	@Override
 	public ArrayList<Impresa> filterField(String fieldName, String operator, Object value) {
 		return (ArrayList<Impresa>) utils.select(impresa, fieldName, operator, value);
 	}
+	//-------------------------------------------------------------------
+	public Statistiche getStats(String fieldName,ArrayList<Impresa> dati) {
+		Statistiche stats=new Statistiche();
+		int somma=0;
+		int max=Integer.MIN_VALUE;
+		int min=Integer.MAX_VALUE;
+		double avg=0;
+		double std=0;
+		double diff_al_quad=0;
+		//Analizzo ogni impresa dell'ArrayList e prendo di ognuna solo i valori che mi interessano in base al campo che ho passato come parametro
+		for(Impresa item:dati) {
+			try {
+				Method m = item.getClass().getMethod("get"+fieldName.substring(0, 1).toUpperCase()+fieldName.substring(1),null);
+				try {
+					Object tmp = m.invoke(item);
+					Integer app;
+					if (tmp instanceof Number) app=(Integer)tmp; //converto l'oggetto restituito in base al campo in un Integer affinchè posso fare le statistiche
+						else return null; //da aggiungere un'eccezione che gestisce il caso in cui si richiedono statistiche per una stringa
+					somma=stats.Somma(app, somma);
+					max=stats.Max(app, max);
+					min=stats.Min(app, min);
+				} catch (IllegalAccessException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (IllegalArgumentException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (InvocationTargetException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			} catch (NoSuchMethodException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (SecurityException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}		
+		}
+		avg=(double)somma/dati.size();
+		stats.setSum(somma);
+		stats.setMax(max);
+		stats.setMin(min);
+		stats.setAvg(avg);
+		stats.setStd(stats.std(avg, dati, fieldName));
+		stats.setCount(dati.size());
+		stats.setField(fieldName);
+		return stats;
+	}
+	//-----------------------------------------------------
 }

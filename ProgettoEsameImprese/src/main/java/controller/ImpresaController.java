@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 import model.Impresa;
 import model.Metadati;
 import service.ImpresaService;
+import statistics.Statistiche;
 
 @RestController
 @RequestMapping
@@ -41,7 +42,7 @@ public class ImpresaController {
 	public void ParseQuery(String query) {
 		String[] token=query.split(":");
 		this.fieldName=token[0];
-		if(this.fieldName.equals("Dim")||this.fieldName.equals("dim") || this.fieldName.equals("CodAteco") || this.fieldName.equals("codateco") || this.fieldName.equals("Descrizione") || this.fieldName.equals("descrizione")) {
+		if(this.fieldName.equals("Dim")||this.fieldName.equals("dim") || this.fieldName.equals("CodAteco") || this.fieldName.equals("codAteco") || this.fieldName.equals("Descrizione") || this.fieldName.equals("descrizione")) {
 			this.operator="null"; //non ha senso definire operatori matematici per le stringhe
 			this.value=token[1];
 		} else {
@@ -57,13 +58,15 @@ public class ImpresaController {
 	
 	
 	//metodo per gestire il $bt
-	public Collection<Impresa> DatiFiltrati(String fieldname,String operator){
+	public Collection<Impresa> CollectionFiltrata(String fieldname,String operator){
 		ArrayList<Impresa> out1=new ArrayList<Impresa>();
 	    ArrayList<Impresa> out2=new ArrayList<Impresa>();
 	    HashSet<Impresa> hs1;
 	    HashSet<Impresa> hs2;
 		switch(operator) {
+		//Separo il caso in cui inserisco come operatore $bt dagli altri casi banali
 		case "$bt": {
+			//Considero l'operatore $bt come intersezione fra $gt e $lt
 			out1=impserv.filterField(fieldName, "$gt", Integer.parseInt(values[0]));
 			out2=impserv.filterField(fieldName, "$lt", Integer.parseInt(values[1]));	
 			hs1=new HashSet<Impresa>(out1);
@@ -71,6 +74,7 @@ public class ImpresaController {
 			hs1.retainAll(hs2);
 			return hs1;
 			}
+		//Casi banali dove non inserisco operatori oppure inserisco operatori semplici
 		default: {
 			if(!(fieldName.equals("CodAteco")||fieldName.equals("codAteco")||fieldName.equals("dim")||fieldName.equals("Dim")|| fieldName.equals("Descrizione") || fieldName.equals("descrizione"))) {//se entro nell'if si parla di interi
 				out1= impserv.filterField(fieldName, operator, Integer.parseInt(values[0]));
@@ -103,7 +107,7 @@ public class ImpresaController {
 				String query2=tokenquery[2];
 				//Faccio il parsing della prima query e restituisco una collezione contenente i dati che soddisfano i filtri
 				ParseQuery(query1);
-				hs3=new HashSet<Impresa>(DatiFiltrati(fieldName,operator));
+				hs3=new HashSet<Impresa>(CollectionFiltrata(fieldName,operator));
 				//Separo il caso in cui inserisco come operatore $bt dagli altri casi banali
 			/*	switch(operator) {
 					case "$bt": {
@@ -129,7 +133,7 @@ public class ImpresaController {
 				}*/
 				//Faccio il parsing della seconda query e restituisco una collezione contente i dati che soddisfano i filtri
 				ParseQuery(query2);
-				hs4=new HashSet(DatiFiltrati(fieldName,operator));
+				hs4=new HashSet(CollectionFiltrata(fieldName,operator));
 				//Separo il caso in cui inserisco come operatore $bt dagli altri casi banali
 				/*switch(operator) {
 					case "$bt": {
@@ -170,7 +174,7 @@ public class ImpresaController {
 		     }else {
 		    	  logicalop=null;
 		    	  ParseQuery(query);
-		    	  hs3=new HashSet(DatiFiltrati(fieldName,operator));
+		    	  hs3=new HashSet(CollectionFiltrata(fieldName,operator));
 		    	 /* switch(operator) {
 					case "$bt": {
 						//if(!(fieldName.equals("CodAteco")||fieldName.equals("codAteco")||fieldName.equals("dim")||fieldName.equals("Dim")|| fieldName.equals("Descrizione") || fieldName.equals("descrizione"))) {
@@ -201,5 +205,10 @@ public class ImpresaController {
 		      }
 			return null;
 		}	
+	}
+	//--------------------------------------------------------------------------------
+	@GetMapping(value="/stats")
+	public Statistiche getStatistiche(@RequestParam(name="field") String fieldName) {
+		return impserv.getStats(fieldName,impserv.getData());
 	}
 }
