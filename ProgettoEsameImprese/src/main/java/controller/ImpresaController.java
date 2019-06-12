@@ -29,19 +29,19 @@ public class ImpresaController {
 	//Definisco dei HashSet dove memorizzare le Collection che derivano dalle due query inserite
 	private ArrayList<Impresa> out1=new ArrayList<Impresa>();
 	private ArrayList<Impresa> out2=new ArrayList<Impresa>();
-	private ArrayList<Impresa> out3=new ArrayList<Impresa>();
-	private ArrayList<Impresa> out4=new ArrayList<Impresa>();
+	//private ArrayList<Impresa> out3=new ArrayList<Impresa>();
+	//private ArrayList<Impresa> out4=new ArrayList<Impresa>();
 	private HashSet<Impresa> hs1;
 	private HashSet<Impresa> hs2;
-	private HashSet<Impresa> hs3;
-	private HashSet<Impresa> hs4;
+	//private HashSet<Impresa> hs3;
+	//private HashSet<Impresa> hs4;
 	
 	
 	//Metodo per il parse della querystring
 	public void ParseQuery(String query) {
 		String[] token=query.split(":");
 		this.fieldName=token[0];
-		if(this.fieldName.equals("Dim")||this.fieldName.equals("dim") || this.fieldName.equals("CodAteco") || this.fieldName.equals("codAteco") || this.fieldName.equals("Descrizione") || this.fieldName.equals("descrizione")) {
+		if(this.fieldName.equals("Dim")||this.fieldName.equals("dim") || this.fieldName.equals("CodAteco") || this.fieldName.equals("codateco") || this.fieldName.equals("Descrizione") || this.fieldName.equals("descrizione")) {
 			this.operator="null"; //non ha senso definire operatori matematici per le stringhe
 			this.value=token[1];
 		} else {
@@ -51,9 +51,35 @@ public class ImpresaController {
 			for(int i=0;i<appoggio.length;i++) {
 			this.values[i]=appoggio[i];
 			}
-		}
-		
+		}	
 	}
+	
+	
+	
+	//metodo per gestire il $bt
+	public Collection<Impresa> OperatorBetween(String fieldname, int estremoinf, int estremosup){
+		ArrayList<Impresa> out1=new ArrayList<Impresa>();
+	    ArrayList<Impresa> out2=new ArrayList<Impresa>();
+	    HashSet<Impresa> hs1;
+	    HashSet<Impresa> hs2;
+		
+		out1=impserv.filterField(fieldName, "$gt",estremoinf );
+		out2=impserv.filterField(fieldName, "$lt", estremosup);	
+		hs1=new HashSet<Impresa>(out1);
+		hs2=new HashSet<Impresa>(out2);
+		hs1.retainAll(hs2);
+		return hs1;
+		
+		
+	    }
+	
+	
+	
+	
+	
+	
+	
+	
 	
 	@GetMapping(value="/metadata") 
 	public ArrayList<Metadati> getMetadati(){
@@ -78,18 +104,18 @@ public class ImpresaController {
 				//Separo il caso in cui inserisco come operatore $bt dagli altri casi banali
 				switch(operator) {
 					case "$bt": {
-						//if(!(fieldName.equals("CodAteco")||fieldName.equals("codAteco")||fieldName.equals("dim")||fieldName.equals("Dim")|| fieldName.equals("Descrizione") || fieldName.equals("descrizione"))) {
+						//*if(!(fieldName.equals("CodAteco")||fieldName.equals("codAteco")||fieldName.equals("dim")||fieldName.equals("Dim")|| fieldName.equals("Descrizione") || fieldName.equals("descrizione"))) {
 								//Considero l'operatore $bt come intersezione fra $gt e $lt
-								out1=impserv.filterField(fieldName, "$gt", Integer.parseInt(values[0]));
-								out3=impserv.filterField(fieldName, "$lt", Integer.parseInt(values[1]));	
-								hs1=new HashSet<Impresa>(out1);
-								hs3=new HashSet<Impresa>(out3);
-								hs1.retainAll(hs3);
-						
+						//		out1=impserv.filterField(fieldName, "$gt", Integer.parseInt(values[0]));
+							//	out3=impserv.filterField(fieldName, "$lt", Integer.parseInt(values[1]));	
+							//	 hs1=new HashSet<Impresa>(out1);
+							//	hs3=new HashSet<Impresa>(out3);
+							//	hs1.retainAll(hs3);
+						hs1=(HashSet<Impresa>) OperatorBetween(fieldName,Integer.parseInt(values[0]),Integer.parseInt(values[1]));
 					};break;
 				//Casi banali dove non inserisco operatori oppure inserisco operatori semplici	
 					default:  {
-						if(!(fieldName.equals("CodAteco")||fieldName.equals("codAteco")||fieldName.equals("dim")||fieldName.equals("Dim")|| fieldName.equals("Descrizione") || fieldName.equals("descrizione"))) {//se entro nell'if si parla di interi
+						if(!(fieldName.equals("CodAteco")||fieldName.equals("codateco")||fieldName.equals("dim")||fieldName.equals("Dim")|| fieldName.equals("Descrizione") || fieldName.equals("descrizione"))) {//se entro nell'if si parla di interi
 							out1= impserv.filterField(fieldName, operator, Integer.parseInt(values[0]));
 							hs1=new HashSet<Impresa>(out1);
 						} else {
@@ -106,16 +132,16 @@ public class ImpresaController {
 					case "$bt": {
 						//if(!(fieldName.equals("CodAteco")||fieldName.equals("codAteco")||fieldName.equals("dim")||fieldName.equals("Dim")|| fieldName.equals("Descrizione") || fieldName.equals("descrizione"))) {
 						//Considero l'operatore $bt come intersezione fra $gt e $lt
-							out2=impserv.filterField(fieldName, "$gt", Integer.parseInt(values[0]));
-							out4=impserv.filterField(fieldName, "$lt", Integer.parseInt(values[1]));	
-							hs2=new HashSet<Impresa>(out2);
-							hs4=new HashSet<Impresa>(out4);
-							hs2.retainAll(hs4);
-						
+						//	out2=impserv.filterField(fieldName, "$gt", Integer.parseInt(values[0]));
+						//	out4=impserv.filterField(fieldName, "$lt", Integer.parseInt(values[1]));	
+						//	hs2=new HashSet<Impresa>(out2);
+						//	hs4=new HashSet<Impresa>(out4);
+						//	hs2.retainAll(hs4);
+						hs2=(HashSet<Impresa>) OperatorBetween(fieldName,Integer.parseInt(values[0]),Integer.parseInt(values[1]));
 					};break;
 				//Casi banali dove non inserisco operatori oppure inserisco operatori semplici
 					default:  {
-						if(!(fieldName.equals("CodAteco")||fieldName.equals("codAteco")||fieldName.equals("dim")||fieldName.equals("Dim")|| fieldName.equals("Descrizione") || fieldName.equals("descrizione"))) {//se entro nell'if si parla di interi
+						if(!(fieldName.equals("CodAteco")||fieldName.equals("codateco")||fieldName.equals("dim")||fieldName.equals("Dim")|| fieldName.equals("Descrizione") || fieldName.equals("descrizione"))) {//se entro nell'if si parla di interi
 							out2= impserv.filterField(fieldName, operator, Integer.parseInt(values[0]));
 							hs2=new HashSet<Impresa>(out2);
 						} else {
@@ -144,16 +170,16 @@ public class ImpresaController {
 		    	  switch(operator) {
 					case "$bt": {
 						//if(!(fieldName.equals("CodAteco")||fieldName.equals("codAteco")||fieldName.equals("dim")||fieldName.equals("Dim")|| fieldName.equals("Descrizione") || fieldName.equals("descrizione"))) {
-								out1=impserv.filterField(fieldName, "$gt", Integer.parseInt(values[0]));
-								out3=impserv.filterField(fieldName, "$lt", Integer.parseInt(values[1]));	
-								hs1=new HashSet<Impresa>(out1);
-								hs3=new HashSet<Impresa>(out3);
-								hs1.retainAll(hs3);
-						
+						//		out1=impserv.filterField(fieldName, "$gt", Integer.parseInt(values[0]));
+						//		out3=impserv.filterField(fieldName, "$lt", Integer.parseInt(values[1]));	
+						//		hs1=new HashSet<Impresa>(out1);
+						//		hs3=new HashSet<Impresa>(out3);
+						//		hs1.retainAll(hs3);
+						hs1=(HashSet<Impresa>) OperatorBetween(fieldName,Integer.parseInt(values[0]),Integer.parseInt(values[1]));
 					};break;
 					
 					default:  {
-						if(!(fieldName.equals("CodAteco")||fieldName.equals("codAteco")||fieldName.equals("dim")||fieldName.equals("Dim")|| fieldName.equals("Descrizione") || fieldName.equals("descrizione"))) {//se entro nell'if si parla di interi
+						if(!(fieldName.equals("CodAteco")||fieldName.equals("codateco")||fieldName.equals("dim")||fieldName.equals("Dim")|| fieldName.equals("Descrizione") || fieldName.equals("descrizione"))) {//se entro nell'if si parla di interi
 							out1= impserv.filterField(fieldName, operator, Integer.parseInt(values[0]));
 							hs1=new HashSet<Impresa>(out1);
 						} else {
