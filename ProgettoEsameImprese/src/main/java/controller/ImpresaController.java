@@ -214,9 +214,9 @@ public class ImpresaController {
 	
 	
 	@GetMapping(value="/stats")
-	public Statistiche getStatisticheFiltrate(@RequestParam(name="field") String fieldName1,
-	                                          @RequestParam(name="filter",required=false,defaultValue="null") String query)
-	{if(query.equals("null")) return impserv.getStats(fieldName1,impserv.getData());
+	public Statistiche getStatisticheFiltrate(@RequestParam(name="field") String fieldStats,
+	                                          @RequestParam(name="filter",required=false,defaultValue="null") String query) {
+	if(query.equals("null")) return impserv.getStats(fieldStats,impserv.getData());
 	else {
 		String[] tokenquery=query.split(";");
 		String logicalop=tokenquery[0];
@@ -225,10 +225,8 @@ public class ImpresaController {
 			String query2=tokenquery[2];
 			ParseQuery(query1);
 			hs3=new HashSet<Impresa>(CollectionFiltrata(fieldName,operator));
-		ParseQuery(query);
-		hs3=new HashSet<Impresa>(CollectionFiltrata(fieldName,operator));
-		ParseQuery(query2);
-		hs4=new HashSet(CollectionFiltrata(fieldName,operator));
+			ParseQuery(query2);
+			hs4=new HashSet(CollectionFiltrata(fieldName,operator));
 		if(logicalop.equals("$or"))  {
 			hs3.addAll(hs4);
 		}
@@ -236,15 +234,18 @@ public class ImpresaController {
 		if(logicalop.equals("$and")) {
 			hs3.retainAll(hs4);
 		}
+		return impserv.getStats(fieldStats, hs3);
+		
      }else {
     	  logicalop=null;
     	  ParseQuery(query);
     	  hs3=new HashSet(CollectionFiltrata(fieldName,operator));
 		
-		return impserv.getStats(fieldName,hs3);
+		return impserv.getStats(fieldStats,hs3);
 		
-	}}
-	return null;
-}}
+     	}
+	}
+}
+}
 
 
