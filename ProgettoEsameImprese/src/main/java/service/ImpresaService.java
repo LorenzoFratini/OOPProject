@@ -8,6 +8,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.Scanner;
 
 import org.springframework.stereotype.Service;
@@ -87,7 +88,7 @@ public class ImpresaService implements Filter<Impresa,Object>{
 		return (ArrayList<Impresa>) utils.select(impresa, fieldName, operator, value);
 	}
 	//-------------------------------------------------------------------
-	public Statistiche getStats(String fieldName,ArrayList<Impresa> dati) {
+	public Statistiche getStats(String fieldName,Collection<Impresa> dati) {
 		Statistiche stats=new Statistiche();
 		int somma=0;
 		int max=Integer.MIN_VALUE;

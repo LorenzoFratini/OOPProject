@@ -207,8 +207,44 @@ public class ImpresaController {
 		}	
 	}
 	//--------------------------------------------------------------------------------
-	@GetMapping(value="/stats")
+	/*@GetMapping(value="/stats")
 	public Statistiche getStatistiche(@RequestParam(name="field") String fieldName) {
 		return impserv.getStats(fieldName,impserv.getData());
-	}
-}
+	}*/
+	
+	
+	@GetMapping(value="/stats")
+	public Statistiche getStatisticheFiltrate(@RequestParam(name="field") String fieldName1,
+	                                          @RequestParam(name="filter",required=false,defaultValue="null") String query)
+	{if(query.equals("null")) return impserv.getStats(fieldName1,impserv.getData());
+	else {
+		String[] tokenquery=query.split(";");
+		String logicalop=tokenquery[0];
+		if((logicalop.equals("$and")|| logicalop.equals("$or"))) {
+			String query1=tokenquery[1];
+			String query2=tokenquery[2];
+			ParseQuery(query1);
+			hs3=new HashSet<Impresa>(CollectionFiltrata(fieldName,operator));
+		ParseQuery(query);
+		hs3=new HashSet<Impresa>(CollectionFiltrata(fieldName,operator));
+		ParseQuery(query2);
+		hs4=new HashSet(CollectionFiltrata(fieldName,operator));
+		if(logicalop.equals("$or"))  {
+			hs3.addAll(hs4);
+		}
+		 
+		if(logicalop.equals("$and")) {
+			hs3.retainAll(hs4);
+		}
+     }else {
+    	  logicalop=null;
+    	  ParseQuery(query);
+    	  hs3=new HashSet(CollectionFiltrata(fieldName,operator));
+		
+		return impserv.getStats(fieldName,hs3);
+		
+	}}
+	return null;
+}}
+
+
