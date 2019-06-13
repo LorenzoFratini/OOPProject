@@ -5,11 +5,13 @@ import java.util.Collection;
 import java.util.HashSet;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.expression.ParseException;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import ch.qos.logback.classic.Logger;
 import model.Impresa;
 import model.Metadati;
 import service.ImpresaService;
@@ -36,11 +38,32 @@ public class ImpresaController {
 	//private HashSet<Impresa> hs2;
 	private HashSet<Impresa> hs3;
 	private HashSet<Impresa> hs4;
+	 
+	//metodo che serve per controllare se il campo rispetto cui si richiedono dati/statistiche è corretto
+	private void VerificaCampo(String fieldName) {
+		ArrayList<Metadati> metdat=impserv.getMetadati();
+		boolean trovato=false;
+		int i=0;
+		while(!trovato && i<metdat.size() ) {
+			if ((fieldName.substring(0,1).toUpperCase()+fieldName.substring(1)).equals(metdat.get(i).getAlias())) trovato=true;
+			i++;
+		}
+		if (!trovato) {
+			throw new RuntimeException("ERROR: alias non corretto");
+		}
+		
+	}
+	
+	private void VerificaOperatore(String operatore) {
+		if(!(operator.equals("$eq")||operator.equals("$gt")||operator.contentEquals("$gte")||operator.equals("$lt")||operator.equals("$lte")||operator.equals("$bt"))) throw new RuntimeException("ERROR: operatore inserito non valido");
+	}
 	
 	
 	//Metodo per il parse della querystring
 	public void ParseQuery(String query) {
+		if(!query.contains(":")) throw new RuntimeException("ERROR: Query non contenente il simbolo "+" : "+" come separatore di valori");
 		String[] token=query.split(":");
+		VerificaCampo(token[0]);
 		this.fieldName=token[0];
 		if(this.fieldName.equals("Dim")||this.fieldName.equals("dim") || this.fieldName.equals("CodAteco") || this.fieldName.equals("codAteco") || this.fieldName.equals("Descrizione") || this.fieldName.equals("descrizione")) {
 			this.operator="null"; //non ha senso definire operatori matematici per le stringhe
@@ -53,7 +76,8 @@ public class ImpresaController {
 			this.values[i]=appoggio[i];
 			}
 		}	
-	}
+		
+}
 	
 	
 	
@@ -63,6 +87,7 @@ public class ImpresaController {
 	    ArrayList<Impresa> out2=new ArrayList<Impresa>();
 	    HashSet<Impresa> hs1;
 	    HashSet<Impresa> hs2;
+	    VerificaOperatore(operator);
 		switch(operator) {
 		//Separo il caso in cui inserisco come operatore $bt dagli altri casi banali
 		case "$bt": {
@@ -97,6 +122,7 @@ public class ImpresaController {
 	public Collection<Impresa> getData(@RequestParam(name="filter",required=false,defaultValue="null") String query) {
 		if(query.equals("null")) return impserv.getData();
 		else {
+			if(!query.contains(";")) throw new RuntimeException("ERROR: Nessun carattere "+";"+ " presente");
 			//Inizio parse della Stringa in cui sono presenti i filtri
 			String[] tokenquery=query.split(";");
 			String logicalop=tokenquery[0];
@@ -216,6 +242,7 @@ public class ImpresaController {
 	@GetMapping(value="/stats")
 	public Statistiche getStatisticheFiltrate(@RequestParam(name="field") String fieldStats,
 	                                          @RequestParam(name="filter",required=false,defaultValue="null") String query) {
+	VerificaCampo(fieldStats);
 	if(query.equals("null")) return impserv.getStats(fieldStats,impserv.getData());
 	else {
 		String[] tokenquery=query.split(";");

@@ -84,7 +84,7 @@ public class ImpresaService implements Filter<Impresa,Object>{
 	} 
 	//-----------------------------------------------------------------
 	@Override
-	public ArrayList<Impresa> filterField(String fieldName, String operator, Object value) {
+	public ArrayList<Impresa> filterField(String fieldName, String operator, Object value)  {
 		return (ArrayList<Impresa>) utils.select(impresa, fieldName, operator, value);
 	}
 	//-------------------------------------------------------------------
@@ -109,24 +109,23 @@ public class ImpresaService implements Filter<Impresa,Object>{
 					max=stats.Max(app, max);
 					min=stats.Min(app, min);
 				} catch (IllegalAccessException e) {
-					// TODO Auto-generated catch block
 					e.printStackTrace();
 				} catch (IllegalArgumentException e) {
-					// TODO Auto-generated catch block
 					e.printStackTrace();
 				} catch (InvocationTargetException e) {
-					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
 			} catch (NoSuchMethodException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			} catch (SecurityException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}		
 		}
-		avg=(double)somma/dati.size();
+		try {
+			avg=(double)somma/dati.size();
+		} catch(ArithmeticException e) {
+			e.printStackTrace();
+		}
 		stats.setSum(somma);
 		stats.setMax(max);
 		stats.setMin(min);

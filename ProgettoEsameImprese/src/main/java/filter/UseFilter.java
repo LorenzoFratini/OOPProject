@@ -5,6 +5,8 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collection;
 
+import eccezioni.NessunMetodoException;
+
 public class UseFilter<T> {
 	public static boolean check(Object value, String operator, Object th) {
 		if (th instanceof Number && value instanceof Number) {	
@@ -16,6 +18,10 @@ public class UseFilter<T> {
 				return valuec > thC;
 			else if (operator.equals("$lt"))
 				return valuec < thC;
+			else if(operator.equals("$gte"))
+				return valuec>=thC;
+			else if(operator.equals("$lte"))
+				return valuec<=thC;
 		}else if(th instanceof String && value instanceof String)
 			return value.equals(th);
 		return false;
@@ -32,7 +38,6 @@ public class UseFilter<T> {
 						out.add(item);
 				} catch (IllegalAccessException e) {
 					// TODO Auto-generated catch block
-					e.printStackTrace();
 				} catch (IllegalArgumentException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
@@ -42,11 +47,11 @@ public class UseFilter<T> {
 				}
 			} catch (NoSuchMethodException e) {
 				// TODO Auto-generated catch block
-				e.printStackTrace();
 			} catch (SecurityException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
-			}					
+			}
+			
 		}
 		return out;
 	}

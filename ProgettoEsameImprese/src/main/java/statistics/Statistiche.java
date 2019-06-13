@@ -89,6 +89,7 @@ public class Statistiche implements Operation{
 	//Questo metodo calcola la deviazione standard dei valori in base al campo che si passa nella richiesta
 	@Override
 	public double std(double avg,Collection<Impresa> dati,String fieldName) {
+		double dev_standard=0;
 		double diff_al_quadrato=0;
 		double somma_diff=0;
 		for(Impresa item:dati) {
@@ -100,24 +101,25 @@ public class Statistiche implements Operation{
 					diff_al_quadrato=Math.pow(app-avg,2);
 					somma_diff+=diff_al_quadrato;
 				} catch (IllegalAccessException e) {
-				// TODO Auto-generated catch block
 					e.printStackTrace();
 				} catch (IllegalArgumentException e) {
-				// TODO Auto-generated catch block
 					e.printStackTrace();
 				} catch (InvocationTargetException e) {
-				// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
 			} catch (NoSuchMethodException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			} catch (SecurityException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}	
 		}
-		return Math.sqrt(somma_diff)/dati.size();
+		try {
+			dev_standard=Math.sqrt(somma_diff)/dati.size();
+		} catch(ArithmeticException e) {
+			e=new ArithmeticException("ERROR: Radice quadrata di un numero negativo");
+			e.printStackTrace();
+		}
+		return dev_standard;
 	}
 
 }
