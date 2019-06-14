@@ -5,7 +5,7 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collection;
 
-import eccezioni.NessunMetodoException;
+
 
 public class UseFilter<T> {
 	public static boolean check(Object value, String operator, Object th) {

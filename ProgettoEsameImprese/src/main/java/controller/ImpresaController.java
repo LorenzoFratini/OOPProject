@@ -54,8 +54,9 @@ public class ImpresaController {
 		
 	}
 	
+	//metodo che serve per controllare se gli operatori logici e matematici sono corretti
 	private void VerificaOperatore(String operatore) {
-		if(!(operator.equals("$eq")||operator.equals("$gt")||operator.contentEquals("$gte")||operator.equals("$lt")||operator.equals("$lte")||operator.equals("$bt"))) throw new RuntimeException("ERROR: operatore inserito non valido");
+		if(!(operator.equals("$eq")||operator.equals("$gt")||operator.contentEquals("$gte")||operator.equals("$lt")||operator.equals("$lte")||operator.equals("$bt") || operator.equals("$and") || operator.equals("$or") ||operator.equals("null") )) throw new RuntimeException("ERROR: operatore inserito non valido");
 	}
 	
 	
@@ -122,7 +123,8 @@ public class ImpresaController {
 	public Collection<Impresa> getData(@RequestParam(name="filter",required=false,defaultValue="null") String query) {
 		if(query.equals("null")) return impserv.getData();
 		else {
-			if(!query.contains(";")) throw new RuntimeException("ERROR: Nessun carattere "+";"+ " presente");
+			//Elimino eventuali spazi bianchi nella query contenente i filtri
+			query=query.replaceAll("\\s", "");
 			//Inizio parse della Stringa in cui sono presenti i filtri
 			String[] tokenquery=query.split(";");
 			String logicalop=tokenquery[0];
@@ -242,9 +244,12 @@ public class ImpresaController {
 	@GetMapping(value="/stats")
 	public Statistiche getStatisticheFiltrate(@RequestParam(name="field") String fieldStats,
 	                                          @RequestParam(name="filter",required=false,defaultValue="null") String query) {
+	//Elimino eventuali spazi bianchi nel campo rispetto cui si richiedono le statistiche
+	fieldStats=fieldStats.replaceAll("\\s", "");
 	VerificaCampo(fieldStats);
 	if(query.equals("null")) return impserv.getStats(fieldStats,impserv.getData());
 	else {
+		query=query.replaceAll("\\s", "");
 		String[] tokenquery=query.split(";");
 		String logicalop=tokenquery[0];
 		if((logicalop.equals("$and")|| logicalop.equals("$or"))) {
