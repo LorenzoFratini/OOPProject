@@ -15,6 +15,7 @@ import ch.qos.logback.classic.Logger;
 import model.Impresa;
 import model.Metadati;
 import service.ImpresaService;
+import statistics.Occorrenza;
 import statistics.Statistiche;
 
 @RestController
@@ -278,6 +279,10 @@ public class ImpresaController {
      	}
 	}
 }
+	@GetMapping("stats/occorrenze") 
+	public ArrayList<Occorrenza> getOccorrenze() {
+		return impserv.ContaOccorrenze(impserv.getData());
+	}
 }
 
 

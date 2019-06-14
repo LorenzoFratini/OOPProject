@@ -17,6 +17,7 @@ import filter.Filter;
 import filter.UseFilter;
 import model.Impresa;
 import model.Metadati;
+import statistics.Occorrenza;
 import statistics.Statistiche;
 
 @Service 
@@ -136,4 +137,22 @@ public class ImpresaService implements Filter<Impresa,Object>{
 		return stats;
 	}
 	//-----------------------------------------------------
+	
+	public ArrayList<Occorrenza> ContaOccorrenze(ArrayList<Impresa> dati) {
+		int occ=0;
+		ArrayList<Occorrenza> out=new ArrayList<Occorrenza>();
+		for(int i=0; i<dati.size();i+=occ) {
+			occ=0;
+			Occorrenza tmp=new Occorrenza();
+			for(int j=i;j<dati.size();j++) {
+				if(dati.get(i).getCodAteco().equals(dati.get(j).getCodAteco())) occ++;
+			}
+			tmp.setCodAteco(dati.get(i).getCodAteco());
+			tmp.setDescrizione(dati.get(i).getDescrizione());
+			tmp.setNum_occorrenze(occ);
+			out.add(tmp);
+		}
+		
+		return out;
+	}
 }
