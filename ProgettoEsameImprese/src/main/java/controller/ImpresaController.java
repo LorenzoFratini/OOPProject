@@ -279,10 +279,61 @@ public class ImpresaController {
      	}
 	}
 }
-	@GetMapping("stats/occorrenze") 
+	/*@GetMapping("stats/occorrenze") 
 	public ArrayList<Occorrenza> getOccorrenze() {
 		return impserv.ContaOccorrenze(impserv.getData());
+	}*/
+	@GetMapping("stats/occorrenze") 
+	public ArrayList<Occorrenza> getOccorrenze(@RequestParam(name="CodAteco",required=false,defaultValue="null") String query) {
+		if(query.equals("null"))return impserv.ContaOccorrenze(impserv.getData());
+		else {
+			ArrayList<Impresa>tuttiidati=new ArrayList<Impresa>(impserv.getData());//tutte le imprese del csv
+			ArrayList<Impresa>out=new ArrayList<Impresa>();//qui ci andranno solo quelle che hanno il cod ateco richiesto
+			query=query.replaceAll("\\s", "");
+			String[] tokenquery=query.split(":");
+			String codatecoscelto=tokenquery[0];
+			for(int i=0;i<tuttiidati.size();i++) {
+				Impresa tmp=new Impresa();
+			if(codatecoscelto.equals(tuttiidati.get(i).getCodAteco())) {
+				tmp.setCodAteco(tuttiidati.get(i).getCodAteco());
+				tmp.setDescrizione(tuttiidati.get(i).getDescrizione());
+				tmp.setDim(tuttiidati.get(i).getDim());
+				tmp.setNumImp(tuttiidati.get(i).getNumImp());
+				tmp.setTotAdd(tuttiidati.get(i).getTotAdd());
+				tmp.setTotDip(tuttiidati.get(i).getTotDip());
+				tmp.setTotExt(tuttiidati.get(i).getTotExt());
+				tmp.setTotInd(tuttiidati.get(i).getTotInd());
+				tmp.setTotInt(tuttiidati.get(i).getTotInt());
+				out.add(tmp);		
+			}}
+			if(out.isEmpty())throw new RuntimeException("ERROR: nessuna impresa corrisponde al CodAteco inserito");
+			return impserv.ContaOccorrenze(out);//in realtà gli passo poche cose
+				
+			}
 	}
-}
+		/*@GetMapping("stats/occorrenze1")
+		public ArrayList<Occorrenza> getOccorrenze1(@RequestParam(name="Num_occorr",required=false,defaultValue="null") String query) {
+			if(query.equals("null"))return impserv.ContaOccorrenze(impserv.getData());
+			else {
+				ArrayList<Impresa>tuttiidati=new ArrayList(impserv.getData());
+				ArrayList<Occorrenza>occ= new ArrayList<Occorrenza>(impserv.ContaOccorrenze(tuttiidati));
+			    ArrayList<Occorrenza>out=new ArrayList<Occorrenza>();
+				query=query.replaceAll("\\s", "");
+				String[] tokenquery=query.split(":");
+				String numoccscelto=tokenquery[0];
+				for(int i=0;i<occ.size();i++) {
+					Occorrenza tmp= new Occorrenza();
+                        if(numoccscelto.equals(occ.get(i).getNum_occorrenze())) {
+						tmp.setCodAteco(occ.get(i).getCodAteco());
+						tmp.setDescrizione(occ.get(i).getDescrizione());
+						tmp.setNum_occorrenze(occ.get(i).getNum_occorrenze());
+						out.add(tmp);	
+					}			
+				}
+				if(out.isEmpty())throw new RuntimeException("ERROR: nessuna impresa è presente il numero di  volte inserito");
+				return impserv.ContaOccorrenze(out);//problema
+			}	*/	
+	}
+
 
 
