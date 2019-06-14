@@ -8,7 +8,7 @@ import model.Impresa;
 public class Occorrenza {
 	private String CodAteco;
 	private String Descrizione;
-	private int num_occorrenze;
+	private int NumOcc;
 	
 	public String getCodAteco() {
 		return CodAteco;
@@ -16,11 +16,11 @@ public class Occorrenza {
 	public void setCodAteco(String CodAteco) {
 		this.CodAteco = CodAteco;
 	}
-	public int getNum_occorrenze() {
-		return num_occorrenze;
+	public int getNumOcc() {
+		return NumOcc;
 	}
-	public void setNum_occorrenze(int num_occorrenze) {
-		this.num_occorrenze = num_occorrenze;
+	public void setNumOcc(int NumOcc) {
+		this.NumOcc = NumOcc;
 	}
 	public String getDescrizione() {
 		return Descrizione;

@@ -149,7 +149,7 @@ public class ImpresaService implements Filter<Impresa,Object>{
 			}
 			tmp.setCodAteco(dati.get(i).getCodAteco());
 			tmp.setDescrizione(dati.get(i).getDescrizione());
-			tmp.setNum_occorrenze(occ);
+			tmp.setNumOcc(occ);
 			out.add(tmp);
 		}
 		

@@ -60,7 +60,7 @@ public class ProgettoEsameImpreseApplication {
 					JSONObject obj = (JSONObject) JSONValue.parseWithException(data); 
 					JSONObject objI = (JSONObject) (obj.get("result"));
 					JSONArray objA = (JSONArray) (objI.get("resources"));
-					
+					try {
 					for(Object o: objA){
 					    if ( o instanceof JSONObject ) {
 					        JSONObject o1 = (JSONObject)o; 
@@ -72,8 +72,12 @@ public class ProgettoEsameImpreseApplication {
 					        	file.download_data_set(urlD, "ImpreseOOP.csv");
 					        }
 					    }
-					}
+					  }
 					System.out.println( "OK" );
+					} catch (FileAlreadyExistsException e) {
+						e=new FileAlreadyExistsException("File già esistente");
+						e.getMessage();
+					}
 				} catch (IOException | ParseException e) {
 					e.printStackTrace();
 				} catch (Exception e) {

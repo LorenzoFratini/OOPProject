@@ -1,5 +1,7 @@
 package controller;
 
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
@@ -46,7 +48,7 @@ public class ImpresaController {
 		boolean trovato=false;
 		int i=0;
 		while(!trovato && i<metdat.size() ) {
-			if ((fieldName.substring(0,1).toUpperCase()+fieldName.substring(1)).equals(metdat.get(i).getAlias())) trovato=true;
+			if ((fieldName.substring(0,1).toUpperCase()+fieldName.substring(1)).equals(metdat.get(i).getAlias()) || fieldName.equals("NumOcc")||fieldName.equals("numOcc")) trovato=true;
 			i++;
 		}
 		if (!trovato) {
@@ -67,11 +69,12 @@ public class ImpresaController {
 		String[] token=query.split(":");
 		VerificaCampo(token[0]);
 		this.fieldName=token[0];
-		if(this.fieldName.equals("Dim")||this.fieldName.equals("dim") || this.fieldName.equals("CodAteco") || this.fieldName.equals("codAteco") || this.fieldName.equals("Descrizione") || this.fieldName.equals("descrizione")) {
+		if(this.fieldName.equals("Dim")||this.fieldName.equals("dim") || this.fieldName.equals("CodAteco") || this.fieldName.equals("codAteco") || this.fieldName.equals("Descrizione") || this.fieldName.equals("descrizione") || this.fieldName.equals("NumOcc") || this.fieldName.equals("numOcc")) {
 			this.operator="null"; //non ha senso definire operatori matematici per le stringhe
 			this.value=token[1];
 		} else {
 			this.operator=token[1];
+			VerificaOperatore(operator);
 			//Gestisco il caso in cui si passano come valori degli estremi di riferimento (vengono separati con delle virgole)
 			String appoggio[]=token[2].split(",");
 			for(int i=0;i<appoggio.length;i++) {
@@ -284,10 +287,54 @@ public class ImpresaController {
 		return impserv.ContaOccorrenze(impserv.getData());
 	}*/
 	@GetMapping("stats/occorrenze") 
-	public ArrayList<Occorrenza> getOccorrenze(@RequestParam(name="CodAteco",required=false,defaultValue="null") String query) {
+	public ArrayList<Occorrenza> getOccorrenze(@RequestParam(name="filter",required=false,defaultValue="null") String query) {
 		if(query.equals("null"))return impserv.ContaOccorrenze(impserv.getData());
 		else {
-			ArrayList<Impresa>tuttiidati=new ArrayList<Impresa>(impserv.getData());//tutte le imprese del csv
+			query=query.replaceAll("\\s", "");
+			ParseQuery(query);
+			if(!(fieldName.equals("CodAteco") || fieldName.equals("codAteco") || fieldName.equals("NumOcc") || fieldName.equals("numOcc"))) throw new RuntimeException("Impossibile restituire occorrenze, riprova!");
+			//ArrayList con tutte le occorrenze
+			ArrayList<Occorrenza> app=new ArrayList<Occorrenza>(impserv.ContaOccorrenze(impserv.getData()));
+			//ArrayList in cui memorizzo l'uscita
+			ArrayList<Occorrenza> out=new ArrayList<Occorrenza>();
+			//Scorro l'intera lista contenente tutti gli oggetti di tipo Occorrenza
+			for(Occorrenza item:app) {
+				try {
+					Method m=item.getClass().getMethod("get"+fieldName.substring(0,1)+fieldName.substring(1), null);
+					try {
+						Object tmp=m.invoke(item);
+						//Ciò che sta dentro tmp può essere di tipo Stringa(CodAteco) oppure di tipo int(NumOcc) quindi devo considerare due casi distrinti
+						if (tmp instanceof String) {
+							tmp=(String)tmp;
+							if(tmp.equals(value)) {
+								out.add(item);
+							} 
+						}else {
+							tmp=((Integer)tmp).intValue();
+							if(tmp.equals(Integer.parseInt(value))) {
+								out.add(item);
+							} 
+						}
+						
+					} catch (IllegalAccessException e) {
+						e.printStackTrace();
+					} catch (IllegalArgumentException e) {
+						e.printStackTrace();
+					} catch (InvocationTargetException e) {
+						e.printStackTrace();
+					}
+			} catch (NoSuchMethodException e) {
+				e.printStackTrace();
+			}
+				catch (SecurityException e) {
+				e.printStackTrace();
+			}
+			}
+			if (out.isEmpty()) throw new RuntimeException("ERROR: CodAteco non esistente oppure NumOcc non esistente");
+			return out;
+		}
+	} 
+			/*ArrayList<Impresa>tuttiidati=new ArrayList<Impresa>(impserv.getData());//tutte le imprese del csv
 			ArrayList<Impresa>out=new ArrayList<Impresa>();//qui ci andranno solo quelle che hanno il cod ateco richiesto
 			query=query.replaceAll("\\s", "");
 			String[] tokenquery=query.split(":");
@@ -308,9 +355,9 @@ public class ImpresaController {
 			}}
 			if(out.isEmpty())throw new RuntimeException("ERROR: nessuna impresa corrisponde al CodAteco inserito");
 			return impserv.ContaOccorrenze(out);//in realtà gli passo poche cose
-				
-			}
-	}
+				*/
+			
+}
 		/*@GetMapping("stats/occorrenze1")
 		public ArrayList<Occorrenza> getOccorrenze1(@RequestParam(name="Num_occorr",required=false,defaultValue="null") String query) {
 			if(query.equals("null"))return impserv.ContaOccorrenze(impserv.getData());
@@ -333,7 +380,7 @@ public class ImpresaController {
 				if(out.isEmpty())throw new RuntimeException("ERROR: nessuna impresa è presente il numero di  volte inserito");
 				return impserv.ContaOccorrenze(out);//problema
 			}	*/	
-	}
+	
 
 
 
