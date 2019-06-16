@@ -23,6 +23,12 @@ import org.springframework.context.annotation.Configuration;
 
 import service.ImpresaService;
 
+/** Classe contenente il main che viene eseguito all'avvio dell'applicazione. 
+ * Effettua il download del dataset a seguito della decodifica del JSON contenente la URL utile per scaricare il file.
+ * Il file verrà scaricato nella stessa cartella del progetto con il nome "ImpreseOOP.csv".
+ * @author Lorenzo Iacopini & Lorenzo Fratini
+ * @version 1.0
+ */
 @Configuration
 @EnableAutoConfiguration
 @ComponentScan(basePackages= {"controller","service"})

@@ -29,6 +29,13 @@ public class ImpresaService implements Filter<Impresa,Object>{
 	String Descrizione[]=new String[9];
 	private UseFilter<Impresa> utils=new UseFilter<Impresa>();
 	//parsing dei dati dentro il costruttore
+	
+	
+	
+	
+	/**Effettua il parsing dei dati memorizzando le informazioni dentro la classe Impresa 
+	 * 
+	 **/
 	public ImpresaService() {
 		try {
 			Scanner fileinput=new Scanner(new BufferedReader(new FileReader(FileToParse)));
@@ -61,11 +68,18 @@ public class ImpresaService implements Filter<Impresa,Object>{
 	}
 	//------------------------------------------------------------
 	
+	/**  
+	 * @return <strong>impresa</strong> Restituisce un ArrayList di oggetti {@Impresa}.
+	 */
 	public ArrayList<Impresa> getData() {
 		return impresa;
 		
 	}
 	//-------------------------------------------------------------
+		
+	/**Metodo utilizzato per la restituzione dei {@Metadati} ovvero nomi dei campi e del loro tipo della classe {@Impresa}.
+	 * @return<strong>metdat</strong> Restituisce un ArrayList della classe {@Metadati}.
+	 */
 	public ArrayList<Metadati> getMetadati() {
 		 Field fld[] = Impresa.class.getDeclaredFields();
 		 ArrayList<Metadati> metdat=new ArrayList<Metadati>();
@@ -84,6 +98,12 @@ public class ImpresaService implements Filter<Impresa,Object>{
 		return metdat;
 	} 
 	//-----------------------------------------------------------------
+	
+	
+
+	/** {@Filter}
+	 *
+	 */
 	@Override
 	public ArrayList<Impresa> filterField(String fieldName, String operator, Object value)  {
 		return (ArrayList<Impresa>) utils.select(impresa, fieldName, operator, value);
@@ -138,6 +158,10 @@ public class ImpresaService implements Filter<Impresa,Object>{
 	}
 	//-----------------------------------------------------
 	
+	/** Metodo per il conteggio delle occorrenze delle imprese con stesso CodAteco e descrizione.
+	 * @param dati ArrayList di oggetti {@Impresa} di cui si vogliono contare le occorrenze. 
+	 * @return un ArrayList di oggetti {@Occorrenza}.
+	 */
 	public ArrayList<Occorrenza> ContaOccorrenze(ArrayList<Impresa> dati) {
 		int occ=0;
 		ArrayList<Occorrenza> out=new ArrayList<Occorrenza>();

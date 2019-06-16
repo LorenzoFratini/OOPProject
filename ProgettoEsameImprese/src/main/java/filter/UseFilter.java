@@ -7,6 +7,11 @@ import java.util.Collection;
 
 
 
+/** 
+ * @author Lorenzo Iacopini & Lorenzo Fratini
+ *
+ * @param <T>
+ */
 public class UseFilter<T> {
 	public static boolean check(Object value, String operator, Object th) {
 		if (th instanceof Number && value instanceof Number) {	

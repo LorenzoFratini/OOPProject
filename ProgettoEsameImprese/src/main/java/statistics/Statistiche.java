@@ -6,6 +6,12 @@ import java.util.Collection;
 
 import model.Impresa;
 
+
+/** Classe per la restituzione delle statistiche.
+ * @author Lorenzo Iacopini & Lorenzo Fratini
+ *
+ */
+
 public class Statistiche implements Operation{
 	private String field;
 	private int sum;
@@ -15,6 +21,10 @@ public class Statistiche implements Operation{
 	private double std;
 	private int count;
 	
+	
+	/**Costruttore che inizializza la variabili d'istanza con dei valori di default.
+	 * 
+	 */
 	public Statistiche() {
 		this.field="";
 		this.sum=0;

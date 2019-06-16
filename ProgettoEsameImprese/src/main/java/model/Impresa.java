@@ -1,5 +1,9 @@
 package model;
 
+/**Classe per memorizzare i dati di ogni colonna del DataSet durante il parsing.
+ * @author Lorenzo Iacopini & Lorenzo Fratini
+ *@version 1.0
+ */
 public class Impresa {
 	private String CodAteco;
 	private String Descrizione;
