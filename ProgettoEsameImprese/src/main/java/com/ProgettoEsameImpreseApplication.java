@@ -88,8 +88,7 @@ public class ProgettoEsameImpreseApplication {
 					e.printStackTrace();
 				}
 				SpringApplication.run(ProgettoEsameImpreseApplication.class, args);
-				//ImpresaService impserv=new ImpresaService();
-				//System.out.println(impserv.filterField("NumImp", ">", 10000));
+				
 			}
 	
 	public static void download_data_set(String url, String fileName) throws Exception {

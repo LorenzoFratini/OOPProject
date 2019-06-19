@@ -116,8 +116,8 @@ public class ImpresaController {
 		//Separo il caso in cui inserisco come operatore $bt dagli altri casi banali
 		case "$bt": {
 			//Considero l'operatore $bt come intersezione fra $gt e $lt
-			out1=impserv.filterField(fieldName, "$gt", Integer.parseInt(values[0]));
-			out2=impserv.filterField(fieldName, "$lt", Integer.parseInt(values[1]));	
+			out1=impserv.filterField(fieldName, "$gte", Integer.parseInt(values[0]));
+			out2=impserv.filterField(fieldName, "$lte", Integer.parseInt(values[1]));	
 			hs1=new HashSet<Impresa>(out1);
 			hs2=new HashSet<Impresa>(out2);
 			hs1.retainAll(hs2);
@@ -230,13 +230,14 @@ public class ImpresaController {
 		if(logicalop.equals("$and")) {
 			hs3.retainAll(hs4);
 		}
+		if(hs3.isEmpty()) {throw new RuntimeException("Non ci sono dati che soddisfano questi filtri");}
 		return impserv.getStats(fieldStats, hs3);
 		
      }else {
     	  logicalop=null;
     	  ParseQuery(query);
     	  hs3=new HashSet(CollectionFiltrata(fieldName,operator));
-		
+    	  if(hs3.isEmpty()) {throw new RuntimeException("Non ci sono dati che soddisfano questi filtri");}
 		return impserv.getStats(fieldStats,hs3);
 		
      	}

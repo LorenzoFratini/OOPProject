@@ -43,7 +43,7 @@ public class UseFilter<T> {
 	}
 
 	
-	/**
+	/**Metodo che scorre l'intera collection passata come parametro ricavando per ogni elemnto il valore cercato.
 	 * @param src Collection(ArrayList/HashMap) di cui si vogliono filtrare i dati.
 	 * @param fieldName Nome del campo rispetto cui si vuole filtrare.
 	 * @param operator Operatore di confronto.
