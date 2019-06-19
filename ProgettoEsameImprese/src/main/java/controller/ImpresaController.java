@@ -20,29 +20,35 @@ import service.ImpresaService;
 import statistics.Occorrenza;
 import statistics.Statistiche;
 
+/**
+ * @author Lorenzo Fratini & Lorenzo Iacopini
+ * @version 1.0
+ *
+ */
+
 @RestController
 @RequestMapping
 public class ImpresaController {
+	
+	//Attributi
 	
 	private String fieldName;
 	private String operator;
 	private String value;
 	private String[] values=new String[2];
+	private HashSet<Impresa> hs3;
+	private HashSet<Impresa> hs4;
 	
 	@Autowired
 	ImpresaService impserv;
 	
-	//Definisco dei HashSet dove memorizzare le Collection che derivano dalle due query inserite
-	//private ArrayList<Impresa> out1=new ArrayList<Impresa>();
-	//private ArrayList<Impresa> out2=new ArrayList<Impresa>();
-	//private ArrayList<Impresa> out3=new ArrayList<Impresa>();
-	//private ArrayList<Impresa> out4=new ArrayList<Impresa>();
-	//private HashSet<Impresa> hs1;
-	//private HashSet<Impresa> hs2;
-	private HashSet<Impresa> hs3;
-	private HashSet<Impresa> hs4;
-	 
-	//metodo che serve per controllare se il campo rispetto cui si richiedono dati/statistiche è corretto
+	//Metodi
+	
+	
+	/**Metodo ausiliario per verificare se il nome del campo inserito è corretto.
+	 * @param fieldName Nome del campo che si vuole verificare
+	 * @throws RuntimeException se il nome del campo inserito non è valido.
+	 */
 	private void VerificaCampo(String fieldName) {
 		ArrayList<Metadati> metdat=impserv.getMetadati();
 		boolean trovato=false;
@@ -57,14 +63,25 @@ public class ImpresaController {
 		
 	}
 	
-	//metodo che serve per controllare se gli operatori logici e matematici sono corretti
+	
+	/**Metodo ausiliario se l'operatore utilizzato nella richiesta è valido.
+	 * @param operatore Operatore che si vuole verificare.
+	 * @throws RuntimeException se l'operatore inserito non è corretto.
+	 */
 	private void VerificaOperatore(String operatore) {
 		if(!(operator.equals("$eq")||operator.equals("$gt")||operator.contentEquals("$gte")||operator.equals("$lt")||operator.equals("$lte")||operator.equals("$bt") || operator.equals("$and") || operator.equals("$or") ||operator.equals("null") )) throw new RuntimeException("ERROR: operatore inserito non valido");
 	}
 	
 	
-	//Metodo per il parse della querystring
-	public void ParseQuery(String query) {
+	/**Metodo che esegue il parsing della QueryString utilizzata nella richiesta andando a ricavare il nome del campo rispetto cui si vogliono ottenere 
+	 * informazioni, l'operatore e il valore per il confronto.
+	 * @param query Ciò che viene scritto nella richiesta
+	 * @throws RuntimeException se nella richiesta non vengono utilizzati i ":" come separatore di valori <br>
+	 * Esempio)  NumImp:$gt:15   (corretto)
+	 * 	
+	 * 
+	 */
+	private void ParseQuery(String query) {
 		if(!query.contains(":")) throw new RuntimeException("ERROR: Query non contenente il simbolo "+" : "+" come separatore di valori");
 		String[] token=query.split(":");
 		VerificaCampo(token[0]);
@@ -84,10 +101,12 @@ public class ImpresaController {
 		
 }
 	
-	
-	
-	//metodo per gestire il $bt
-	public Collection<Impresa> CollectionFiltrata(String fieldname,String operator){
+	/**Metodo per ottenere la Collection filtrata
+	 * @param fieldname Nome del campo rispetto cui filtrare
+	 * @param operator Operatore del confronto
+	 * @return <strong>hs1</strong> HashSet di {@link Impresa} contenente le imprese che soddisfano i filtri.
+	 */
+	private Collection<Impresa> CollectionFiltrata(String fieldname,String operator){
 		ArrayList<Impresa> out1=new ArrayList<Impresa>();
 	    ArrayList<Impresa> out2=new ArrayList<Impresa>();
 	    HashSet<Impresa> hs1;
@@ -118,11 +137,20 @@ public class ImpresaController {
 		}		
 }
 	
+	
+	/**Metodo che restituisce i <strong>metadati</strong> quando nella richiesta HTTP viene inserito "/metadata"
+	 * @return {@link ImpresaService#getMetadati()}
+	 */
 	@GetMapping(value="/metadata") 
 	public ArrayList<Metadati> getMetadati(){
 		return impserv.getMetadati();
 	}
 	
+	/**Metodo che serve per restituire i dati; sia dell'intero dataset sia nel caso di passaggio di filtri.
+	 * @param query Ciò che viene scritto dopo il parametro <strong>filter</strong> nella richiesta HTTP.
+	 * @return {@link ImpresaService#getData()} nel caso in cui non si inserisce alcun filtro.<br>
+	 * 			<strong>hs3</strong> HashSet contenente le imprese che soddisfano i filtri passati durante la richiesta.
+	 */
 	@GetMapping(value="/data") 
 	public Collection<Impresa> getData(@RequestParam(name="filter",required=false,defaultValue="null") String query) {
 		if(query.equals("null")) return impserv.getData();
@@ -140,57 +168,9 @@ public class ImpresaController {
 				//Faccio il parsing della prima query e restituisco una collezione contenente i dati che soddisfano i filtri
 				ParseQuery(query1);
 				hs3=new HashSet<Impresa>(CollectionFiltrata(fieldName,operator));
-				//Separo il caso in cui inserisco come operatore $bt dagli altri casi banali
-			/*	switch(operator) {
-					case "$bt": {
-						//*if(!(fieldName.equals("CodAteco")||fieldName.equals("codAteco")||fieldName.equals("dim")||fieldName.equals("Dim")|| fieldName.equals("Descrizione") || fieldName.equals("descrizione"))) {
-								//Considero l'operatore $bt come intersezione fra $gt e $lt
-						//		out1=impserv.filterField(fieldName, "$gt", Integer.parseInt(values[0]));
-							//	out3=impserv.filterField(fieldName, "$lt", Integer.parseInt(values[1]));	
-							//	 hs1=new HashSet<Impresa>(out1);
-							//	hs3=new HashSet<Impresa>(out3);
-							//	hs1.retainAll(hs3);
-						hs1=(HashSet<Impresa>) OperatorBetween(fieldName,Integer.parseInt(values[0]),Integer.parseInt(values[1]));
-					};break;
-				//Casi banali dove non inserisco operatori oppure inserisco operatori semplici	
-					default:  {
-						if(!(fieldName.equals("CodAteco")||fieldName.equals("codateco")||fieldName.equals("dim")||fieldName.equals("Dim")|| fieldName.equals("Descrizione") || fieldName.equals("descrizione"))) {//se entro nell'if si parla di interi
-							out1= impserv.filterField(fieldName, operator, Integer.parseInt(values[0]));
-							hs1=new HashSet<Impresa>(out1);
-						} else {
-							out1= impserv.filterField(fieldName, operator, value);
-							hs1=new HashSet<Impresa>(out1);
-						}
-					}
-				}*/
 				//Faccio il parsing della seconda query e restituisco una collezione contente i dati che soddisfano i filtri
 				ParseQuery(query2);
 				hs4=new HashSet(CollectionFiltrata(fieldName,operator));
-				//Separo il caso in cui inserisco come operatore $bt dagli altri casi banali
-				/*switch(operator) {
-					case "$bt": {
-						//if(!(fieldName.equals("CodAteco")||fieldName.equals("codAteco")||fieldName.equals("dim")||fieldName.equals("Dim")|| fieldName.equals("Descrizione") || fieldName.equals("descrizione"))) {
-						//Considero l'operatore $bt come intersezione fra $gt e $lt
-						//	out2=impserv.filterField(fieldName, "$gt", Integer.parseInt(values[0]));
-						//	out4=impserv.filterField(fieldName, "$lt", Integer.parseInt(values[1]));	
-						//	hs2=new HashSet<Impresa>(out2);
-						//	hs4=new HashSet<Impresa>(out4);
-						//	hs2.retainAll(hs4);
-						hs2=(HashSet<Impresa>) OperatorBetween(fieldName,Integer.parseInt(values[0]),Integer.parseInt(values[1]));
-					};break;
-				//Casi banali dove non inserisco operatori oppure inserisco operatori semplici
-					default:  {
-						if(!(fieldName.equals("CodAteco")||fieldName.equals("codateco")||fieldName.equals("dim")||fieldName.equals("Dim")|| fieldName.equals("Descrizione") || fieldName.equals("descrizione"))) {//se entro nell'if si parla di interi
-							out2= impserv.filterField(fieldName, operator, Integer.parseInt(values[0]));
-							hs2=new HashSet<Impresa>(out2);
-						} else {
-							out2= impserv.filterField(fieldName, operator, value);
-							hs2=new HashSet<Impresa>(out2);
-						}
-					}
-					
-				}*/
-				
 				//Se l'operatore è un $or faccio la fusione delle due Collection
 				if(logicalop.equals("$or"))  {
 					hs3.addAll(hs4);
@@ -207,44 +187,24 @@ public class ImpresaController {
 		    	  logicalop=null;
 		    	  ParseQuery(query);
 		    	  hs3=new HashSet(CollectionFiltrata(fieldName,operator));
-		    	 /* switch(operator) {
-					case "$bt": {
-						//if(!(fieldName.equals("CodAteco")||fieldName.equals("codAteco")||fieldName.equals("dim")||fieldName.equals("Dim")|| fieldName.equals("Descrizione") || fieldName.equals("descrizione"))) {
-						//		out1=impserv.filterField(fieldName, "$gt", Integer.parseInt(values[0]));
-						//		out3=impserv.filterField(fieldName, "$lt", Integer.parseInt(values[1]));	
-						//		hs1=new HashSet<Impresa>(out1);
-						//		hs3=new HashSet<Impresa>(out3);
-						//		hs1.retainAll(hs3);
-						hs1=(HashSet<Impresa>) OperatorBetween(fieldName,Integer.parseInt(values[0]),Integer.parseInt(values[1]));
-					};break;
-					
-					default:  {
-						if(!(fieldName.equals("CodAteco")||fieldName.equals("codateco")||fieldName.equals("dim")||fieldName.equals("Dim")|| fieldName.equals("Descrizione") || fieldName.equals("descrizione"))) {//se entro nell'if si parla di interi
-							out1= impserv.filterField(fieldName, operator, Integer.parseInt(values[0]));
-							hs1=new HashSet<Impresa>(out1);
-						} else {
-							out1= impserv.filterField(fieldName, operator, value);
-							hs1=new HashSet<Impresa>(out1);
-						}
-					}
-				}*/
 		    	  return hs3;
-				/*if(!(fieldName.equals("CodAteco")||fieldName.equals("codAteco")||fieldName.equals("dim")||fieldName.equals("Dim")|| fieldName.equals("Descrizione") || fieldName.equals("descrizione"))) {//se entro nell'if si parla di interi
-						out1= impserv.filterField(fieldName, operator, Integer.parseInt(value[0]));//spiegata la conversione
-					}else out1= impserv.filterField(fieldName, operator, value[0]);
-				return out1;*/
-		          
 		      }
 			return null;
 		}	
 	}
-	//--------------------------------------------------------------------------------
-	/*@GetMapping(value="/stats")
-	public Statistiche getStatistiche(@RequestParam(name="field") String fieldName) {
-		return impserv.getStats(fieldName,impserv.getData());
-	}*/
 	
 	
+	
+	/**Metodo che serve per la restituzione delle statistiche {somma, massimo, minimo, media, deviazione standard} rispetto un certo campo.
+	 * @param fieldStats Nome del campo rispetto cui si vogliono calcolare le statistiche
+	 * @param query Stringa contenente i filtri per il calcolo delle statistiche solo rispetto alcune imprese 
+	 * @return {@link ImpresaService#getStats(String, Collection)} <br>
+	 * 			Nel caso in cui nella richiesta non vengono specificati filtri si considerano tutte le imprese<br>
+	 * 			Nel caso in cui nella richiesta vengono specificati dei filtri al metodo che calcola le stastiche si passa
+	 * 			una Collection di {@link Impresa} contenente solo le imprese che soddisfano i filtri.
+	 * 			
+	 * 			
+	 */
 	@GetMapping(value="/stats")
 	public Statistiche getStatisticheFiltrate(@RequestParam(name="field") String fieldStats,
 	                                          @RequestParam(name="filter",required=false,defaultValue="null") String query) {
@@ -282,10 +242,19 @@ public class ImpresaController {
      	}
 	}
 }
-	/*@GetMapping("stats/occorrenze") 
-	public ArrayList<Occorrenza> getOccorrenze() {
-		return impserv.ContaOccorrenze(impserv.getData());
-	}*/
+	
+	
+	/**Metodo per la restituzione delle occorrenze del Codice Ateco delle imprese.
+	 * Vi è anche la possibilità di inserire un filtro se si vogliono stampare le occorenze delle aziendo rispetto un solo Codice Ateco 
+	 * oppure rispetto ad un certo numero di occorrenze prefissato.
+	 * @param query Stringa contenente Codice Ateco o numero occorrenze rispetto cui si vogliono ottenere i dati
+	 * @return {@link ImpresaService#ContaOccorrenze(ArrayList)} se non viene specificato nessun filtro <br>
+	 * 			<strong>out</strong> Collection di {@link Occorrenza} che soddisfano il filtro inserito.
+	 * @throws IllegalAccessException se si vuole ottenere un metodo get di un campo inesistente.
+	 * @throws IllegalArgumentException se il nome del campo passato è errato.
+	 * @throws NoSuchMethodException se il metodo get ottenuto a seguito del passaggio del campo è inesistente.
+	 * @throws RuntimeException se non ci sono risultati per il Codice Ateco o il numero di occorrenze inserito nel filtro.
+	 */
 	@GetMapping("stats/occorrenze") 
 	public ArrayList<Occorrenza> getOccorrenze(@RequestParam(name="filter",required=false,defaultValue="null") String query) {
 		if(query.equals("null"))return impserv.ContaOccorrenze(impserv.getData());
@@ -334,53 +303,9 @@ public class ImpresaController {
 			return out;
 		}
 	} 
-			/*ArrayList<Impresa>tuttiidati=new ArrayList<Impresa>(impserv.getData());//tutte le imprese del csv
-			ArrayList<Impresa>out=new ArrayList<Impresa>();//qui ci andranno solo quelle che hanno il cod ateco richiesto
-			query=query.replaceAll("\\s", "");
-			String[] tokenquery=query.split(":");
-			String codatecoscelto=tokenquery[0];
-			for(int i=0;i<tuttiidati.size();i++) {
-				Impresa tmp=new Impresa();
-			if(codatecoscelto.equals(tuttiidati.get(i).getCodAteco())) {
-				tmp.setCodAteco(tuttiidati.get(i).getCodAteco());
-				tmp.setDescrizione(tuttiidati.get(i).getDescrizione());
-				tmp.setDim(tuttiidati.get(i).getDim());
-				tmp.setNumImp(tuttiidati.get(i).getNumImp());
-				tmp.setTotAdd(tuttiidati.get(i).getTotAdd());
-				tmp.setTotDip(tuttiidati.get(i).getTotDip());
-				tmp.setTotExt(tuttiidati.get(i).getTotExt());
-				tmp.setTotInd(tuttiidati.get(i).getTotInd());
-				tmp.setTotInt(tuttiidati.get(i).getTotInt());
-				out.add(tmp);		
-			}}
-			if(out.isEmpty())throw new RuntimeException("ERROR: nessuna impresa corrisponde al CodAteco inserito");
-			return impserv.ContaOccorrenze(out);//in realtà gli passo poche cose
-				*/
-			
+		
 }
-		/*@GetMapping("stats/occorrenze1")
-		public ArrayList<Occorrenza> getOccorrenze1(@RequestParam(name="Num_occorr",required=false,defaultValue="null") String query) {
-			if(query.equals("null"))return impserv.ContaOccorrenze(impserv.getData());
-			else {
-				ArrayList<Impresa>tuttiidati=new ArrayList(impserv.getData());
-				ArrayList<Occorrenza>occ= new ArrayList<Occorrenza>(impserv.ContaOccorrenze(tuttiidati));
-			    ArrayList<Occorrenza>out=new ArrayList<Occorrenza>();
-				query=query.replaceAll("\\s", "");
-				String[] tokenquery=query.split(":");
-				String numoccscelto=tokenquery[0];
-				for(int i=0;i<occ.size();i++) {
-					Occorrenza tmp= new Occorrenza();
-                        if(numoccscelto.equals(occ.get(i).getNum_occorrenze())) {
-						tmp.setCodAteco(occ.get(i).getCodAteco());
-						tmp.setDescrizione(occ.get(i).getDescrizione());
-						tmp.setNum_occorrenze(occ.get(i).getNum_occorrenze());
-						out.add(tmp);	
-					}			
-				}
-				if(out.isEmpty())throw new RuntimeException("ERROR: nessuna impresa è presente il numero di  volte inserito");
-				return impserv.ContaOccorrenze(out);//problema
-			}	*/	
-	
+		
 
 
 

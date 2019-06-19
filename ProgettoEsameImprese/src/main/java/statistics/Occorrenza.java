@@ -5,14 +5,19 @@ import java.util.Collection;
 
 import model.Impresa;
 
-/** Claase che serve per restituire  le occorrenze rdel CodAteco e della descrizione delle imprese del dataset.
+/** Claase che serve per restituire le occorrenze del CodAteco e della Descrizione delle imprese del dataset.
  * @author Lorenzo Iacopini & Lorenzo Fratini.
- *
+ * @version 1.0
  */
 public class Occorrenza {
+	
+	//Attributi
+	
 	private String CodAteco;
 	private String Descrizione;
 	private int NumOcc;
+	
+	//Metodi
 	
 	public String getCodAteco() {
 		return CodAteco;

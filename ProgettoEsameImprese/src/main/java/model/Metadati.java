@@ -1,13 +1,19 @@
 package model;
 
-/** Classe per restituire i metadati(formato JSON) ovvero elenco degli attributi e del tipo della classe {@link Impresa}.
+/** Classe per restituire i metadati (formato JSON) ovvero elenco degli attributi e del tipo della classe {@link Impresa}.
  * @author Lorenzo Iacopini & Lorenzo Fratini
  * @version 1.0
  */
 public class Metadati {
+	
+	//Attributi
+	
 	private String alias;
 	private String sourceField;
 	private String type;
+	
+	//Metodi
+	
 	public String getAlias() {
 		return alias;
 	}

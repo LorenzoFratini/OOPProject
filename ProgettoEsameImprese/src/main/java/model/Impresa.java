@@ -5,6 +5,9 @@ package model;
  *@version 1.0
  */
 public class Impresa {
+	
+	//Attributi
+	
 	private String CodAteco;
 	private String Descrizione;
 	private String Dim;
@@ -15,6 +18,8 @@ public class Impresa {
 	private int TotExt;
 	private int TotInt;
 
+	//Metodi
+	
 	public int getTotAdd() {
 		return TotAdd;
 	}

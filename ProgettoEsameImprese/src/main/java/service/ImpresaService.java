@@ -22,18 +22,19 @@ import statistics.Statistiche;
 
 @Service 
 public class ImpresaService implements Filter<Impresa,Object>{
-	String FileToParse="ImpreseOOP.csv";
+	
+	//Attributi
+	
+	private String FileToParse="ImpreseOOP.csv";
 	final String DELIMITER=";";
-	private ArrayList<Impresa> impresa=new ArrayList<Impresa>();
-	String type[]=new String[9];
-	String Descrizione[]=new String[9];
+	private ArrayList<Impresa> imprese=new ArrayList<Impresa>();
+	private String type[]=new String[9];
+	private String Descrizione[]=new String[9];
 	private UseFilter<Impresa> utils=new UseFilter<Impresa>();
-	//parsing dei dati dentro il costruttore
 	
+	//Metodi
 	
-	
-	
-	/**Effettua il parsing dei dati memorizzando le informazioni dentro la classe Impresa 
+	/**Effettua il parsing dei dati, all'atto della creazione dell'oggetto, memorizzando le informazioni dentro la classe {@link Impresa} 
 	 * 
 	 **/
 	public ImpresaService() {
@@ -58,7 +59,7 @@ public class ImpresaService implements Filter<Impresa,Object>{
 				appoggio.setTotInd(Integer.parseInt(token[6]));
 				appoggio.setTotExt(Integer.parseInt(token[7]));
 				appoggio.setTotInt(Integer.parseInt(token[8]));
-				impresa.add(appoggio);
+				imprese.add(appoggio);
 				}
 		
 			fileinput.close();
@@ -66,19 +67,17 @@ public class ImpresaService implements Filter<Impresa,Object>{
 			System.out.println(e.getMessage());
 		}
 	}
-	//------------------------------------------------------------
 	
 	/**  
-	 * @return <strong>impresa</strong> Restituisce un ArrayList di oggetti {@Impresa}.
+	 * @return <strong>impresa</strong> Restituisce un ArrayList di {@link Impresa}.
 	 */
 	public ArrayList<Impresa> getData() {
-		return impresa;
+		return imprese;
 		
 	}
-	//-------------------------------------------------------------
 		
-	/**Metodo utilizzato per la restituzione dei {@Metadati} ovvero nomi dei campi e del loro tipo della classe {@Impresa}.
-	 * @return<strong>metdat</strong> Restituisce un ArrayList della classe {@Metadati}.
+	/**Metodo utilizzato per la restituzione dei {@link Metadati} ovvero nomi dei campi e del loro tipo della classe {@link Impresa}.
+	 * @return<strong>metdat</strong> Restituisce un ArrayList di {@link Metadati}.
 	 */
 	public ArrayList<Metadati> getMetadati() {
 		 Field fld[] = Impresa.class.getDeclaredFields();
@@ -97,34 +96,44 @@ public class ImpresaService implements Filter<Impresa,Object>{
 		
 		return metdat;
 	} 
-	//-----------------------------------------------------------------
-	
 	
 
-	/** {@Filter}
+	/** {@link Filter}
 	 *
 	 */
 	@Override
 	public ArrayList<Impresa> filterField(String fieldName, String operator, Object value)  {
-		return (ArrayList<Impresa>) utils.select(impresa, fieldName, operator, value);
+		return (ArrayList<Impresa>) utils.select(imprese, fieldName, operator, value);
 	}
-	//-------------------------------------------------------------------
+	
+	
+	/**Metodo per la restituzione delle statistiche rispetto un campo
+	 * @param fieldName Nome del campo rispetto cui si vogliono ottenere le statistiche
+	 * @param dati Collection contenente gli oggetti  rispetto cui si calcolano le statistiche 
+	 * 		(somma, massimo, minimo, media e deviazione standard). 
+	 * @return <strong>stats</strong> Oggetto della classe {@link Statistiche} contenente tutte le statistiche rispetto il campo
+	 * 			desiderato.
+	 * @throws IllegalAccessException se si vuole ottenere un metodo get di un campo inesistente.
+	 * @throws IllegalArgumentException se il nome del campo passato è errato.
+	 * @throws NoSuchMethodException se il metodo get ottenuto a seguito del passaggio del campo è inesistente. 
+	 * @throws ArithmetichException se la dimensione della Collection che passo come parametro è nulla.
+	 */
 	public Statistiche getStats(String fieldName,Collection<Impresa> dati) {
 		Statistiche stats=new Statistiche();
 		int somma=0;
-		int max=Integer.MIN_VALUE;
-		int min=Integer.MAX_VALUE;
+		int max=Integer.MIN_VALUE; //affinchè nel primo confronto che verrà effettuato il valore di tale variabile sarà cambiato
+		int min=Integer.MAX_VALUE; //affinchè nel primo confronto che verrà effettuato il valore di tale variabile sarà cambiato
 		double avg=0;
 		double std=0;
 		double diff_al_quad=0;
-		//Analizzo ogni impresa dell'ArrayList e prendo di ognuna solo i valori che mi interessano in base al campo che ho passato come parametro
+		//Analizzo ogni impresa della Collection e prendo di ognuna solo i valori che mi interessano in base al campo che ho passato come parametro
 		for(Impresa item:dati) {
 			try {
 				Method m = item.getClass().getMethod("get"+fieldName.substring(0, 1).toUpperCase()+fieldName.substring(1),null);
 				try {
 					Object tmp = m.invoke(item);
 					Integer app;
-					if (tmp instanceof Number) app=(Integer)tmp; //converto l'oggetto restituito in base al campo in un Integer affinchè posso fare le statistiche
+					if (tmp instanceof Number) app=(Integer)tmp; //converto l'oggetto restituito in base al campo in un Integer affinchè posso calcolare le statistiche
 						else return null; //da aggiungere un'eccezione che gestisce il caso in cui si richiedono statistiche per una stringa
 					somma=stats.Somma(app, somma);
 					max=stats.Max(app, max);
@@ -156,18 +165,17 @@ public class ImpresaService implements Filter<Impresa,Object>{
 		stats.setField(fieldName);
 		return stats;
 	}
-	//-----------------------------------------------------
 	
-	/** Metodo per il conteggio delle occorrenze delle imprese con stesso CodAteco e descrizione.
-	 * @param dati ArrayList di oggetti {@Impresa} di cui si vogliono contare le occorrenze. 
-	 * @return un ArrayList di oggetti {@Occorrenza}.
+	/** Metodo per il conteggio delle occorrenze delle imprese con stesso CodAteco e Descrizione.
+	 * @param dati ArrayList di oggetti {@link Impresa} di cui si vogliono contare le occorrenze. 
+	 * @return <strong>out</strong> ArrayList di oggetti {@link Occorrenza}.
 	 */
 	public ArrayList<Occorrenza> ContaOccorrenze(ArrayList<Impresa> dati) {
 		int occ=0;
-		ArrayList<Occorrenza> out=new ArrayList<Occorrenza>();
-		for(int i=0; i<dati.size();i+=occ) {
+		ArrayList<Occorrenza> out=new ArrayList<Occorrenza>(); 
+		for(int i=0; i<dati.size();i+=occ) { //Essendo il dataset ordinato per CodAteco incremento il contatore di una quantità pari all'occorrenza
 			occ=0;
-			Occorrenza tmp=new Occorrenza();
+			Occorrenza tmp=new Occorrenza(); 
 			for(int j=i;j<dati.size();j++) {
 				if(dati.get(i).getCodAteco().equals(dati.get(j).getCodAteco())) occ++;
 			}

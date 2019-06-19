@@ -13,6 +13,9 @@ import model.Impresa;
  */
 
 public class Statistiche implements Operation{
+	
+	//Attributi
+	
 	private String field;
 	private int sum;
 	private double avg;
@@ -21,6 +24,7 @@ public class Statistiche implements Operation{
 	private double std;
 	private int count;
 	
+	//Metodi
 	
 	/**Costruttore che inizializza la variabili d'istanza con dei valori di default.
 	 * 
@@ -84,20 +88,27 @@ public class Statistiche implements Operation{
 	}
 	
 	@Override
-	public int Max(int valore,Integer massimo) {
+	public int Max(int valore,int massimo) {
 		if (valore>massimo) massimo=valore;
 		return massimo;
 	}
 	
 	@Override
-	public int Min(int valore, Integer minimo) {
+	public int Min(int valore, int minimo) {
 		if (valore<minimo) minimo=valore;
 		return minimo;
 	}
 	
 	
 	//Questo metodo calcola la deviazione standard dei valori in base al campo che si passa nella richiesta
+	/**
+	 *@throws IllegalAccessException se si vuole ottenere un metodo get di un campo inesistente.
+	 * @throws IllegalArgumentException se il nome del campo passato è errato.
+	 * @throws NoSuchMethodException se il metodo get ottenuto a seguito del passaggio del campo è inesistente.
+	 * @throws ArithmeticException se si deve effettuare una radice quadrata di un numero negativo.
+	 */
 	@Override
+	
 	public double std(double avg,Collection<Impresa> dati,String fieldName) {
 		double dev_standard=0;
 		double diff_al_quadrato=0;

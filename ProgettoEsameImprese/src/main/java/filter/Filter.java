@@ -2,6 +2,12 @@ package filter;
 
 import java.util.Collection;
 
+/**
+ * @author Lorenzo Fratini & Lorenzo Iacopini
+ *Interfaccia generifica che può essere utilizzata nel momento in cui si richiede un filtraggio dei valori.
+ * @param <E> Tipo generico che verrà sostituito con un tipo specifico nel momento in cui il metodo astratto verrà chiamato
+ * @param <T> Tipo generico che verrà sostituito con un tipo specifico nel momento in cui il metodo astratto verra chiamato
+ */
 public interface Filter<E,T> {
 	
 	

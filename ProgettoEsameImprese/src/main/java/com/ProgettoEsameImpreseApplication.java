@@ -25,6 +25,7 @@ import service.ImpresaService;
 
 /** Classe contenente il main che viene eseguito all'avvio dell'applicazione. 
  * Effettua il download del dataset a seguito della decodifica del JSON contenente la URL utile per scaricare il file.
+ * Il seguente metodo stamperà a video l'URL da cui si vuole scaricare il file, l'URL del file .csv e del JSON.
  * Il file verrà scaricato nella stessa cartella del progetto con il nome "ImpreseOOP.csv".
  * @author Lorenzo Iacopini & Lorenzo Fratini
  * @version 1.0
@@ -36,10 +37,8 @@ import service.ImpresaService;
 public class ProgettoEsameImpreseApplication {
 
 	public static void main(String[] args) {
-		//URL contenente il dataset
+		//URL contenente il dataset 
 				String url = "https://www.dati.gov.it/api/3/action/package_show?id=866cfedc-8eb9-4784-9ec4-f5730f252e89";
-				if(args.length == 1)
-					url = args[0]; //Url by args ;-)
 				try {
 					
 					//creazione connessione 
@@ -74,8 +73,7 @@ public class ProgettoEsameImpreseApplication {
 					        String urlD = (String)o1.get("url");
 					        System.out.println(format + " | " + urlD);
 					        if(format.equals("csv")) {
-					        	Downloader file=new Downloader();
-					        	file.download_data_set(urlD, "ImpreseOOP.csv");
+					        	download_data_set(urlD, "ImpreseOOP.csv");
 					        }
 					    }
 					  }
@@ -93,5 +91,14 @@ public class ProgettoEsameImpreseApplication {
 				//ImpresaService impserv=new ImpresaService();
 				//System.out.println(impserv.filterField("NumImp", ">", 10000));
 			}
+	
+	public static void download_data_set(String url, String fileName) throws Exception {
+	    try (InputStream in = URI.create(url).toURL().openStream()) {
+	    		Files.copy(in, Paths.get(fileName));
+	    } catch(FileAlreadyExistsException e) {
+	    	e=new FileAlreadyExistsException("File già esistente");
+	    	e.getMessage();
+	    }
+	}
 
 }
