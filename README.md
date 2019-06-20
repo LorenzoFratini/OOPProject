@@ -101,3 +101,8 @@ Una volta avviata l'applicazione, per verificare il funzionamento del programma 
 
 
  **NOTA** : per una visione migliore si consiglia di utilizzare un programma che simula richieste HTTP come **_Postman_**
+ 
+ ## Diagrammi UML
+ 
+ ### Diagramma dei casi d'uso
+ ![Use Case Diagram OOP](https://user-images.githubusercontent.com/48387913/59841654-11b3a580-9355-11e9-8c45-95b239c30343.jpg)
