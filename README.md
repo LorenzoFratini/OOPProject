@@ -106,3 +106,10 @@ Una volta avviata l'applicazione, per verificare il funzionamento del programma 
  
  ### Diagramma dei casi d'uso
  ![Use Case Diagram OOP](https://user-images.githubusercontent.com/48387913/59841654-11b3a580-9355-11e9-8c45-95b239c30343.jpg)
+ 
+ ### Diagramma delle sequenze
+ ![Sequence Diagram Progetto OOP](https://user-images.githubusercontent.com/48387913/59842147-352b2000-9356-11e9-8c95-15b61cece4a2.jpg)
+
+### Diagramma delle classi
+![Class Diagram Progetto OOP](https://user-images.githubusercontent.com/48387913/59842309-96eb8a00-9356-11e9-9693-4ecf338f75ee.jpg)
+
