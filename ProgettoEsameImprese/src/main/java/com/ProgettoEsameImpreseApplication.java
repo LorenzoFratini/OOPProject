@@ -27,7 +27,7 @@ import service.ImpresaService;
  * Effettua il download del dataset a seguito della decodifica del JSON contenente la URL utile per scaricare il file.
  * Il seguente metodo stamperà a video l'URL da cui si vuole scaricare il file, l'URL del file .csv e del JSON.
  * Il file verrà scaricato nella stessa cartella del progetto con il nome "ImpreseOOP.csv".
- * @author Lorenzo Iacopini & Lorenzo Fratini
+ * @author Lorenzo Iacopini -- Lorenzo Fratini
  * @version 1.0
  */
 @Configuration
