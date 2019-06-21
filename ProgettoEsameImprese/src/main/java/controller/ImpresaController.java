@@ -45,7 +45,7 @@ public class ImpresaController {
 	//Metodi
 	
 	
-	/**Metodo ausiliario per verificare se il nome del campo inserito è corretto.
+	/**Metodo ausiliario per verificare se il nome del campo inserito per il filtraggio è corretto.
 	 * @param fieldName Nome del campo che si vuole verificare
 	 * @throws RuntimeException se il nome del campo inserito non è valido.
 	 */
@@ -120,7 +120,7 @@ public class ImpresaController {
 			out2=impserv.filterField(fieldName, "$lte", Integer.parseInt(values[1]));	
 			hs1=new HashSet<Impresa>(out1);
 			hs2=new HashSet<Impresa>(out2);
-			hs1.retainAll(hs2);
+			hs1.retainAll(hs2);//considero gli elementi in comune fra i due HashSet
 			return hs1;
 			}
 		//Casi banali dove non inserisco operatori oppure inserisco operatori semplici
@@ -215,7 +215,7 @@ public class ImpresaController {
 	else {
 		query=query.replaceAll("\\s", "");
 		String[] tokenquery=query.split(";");
-		String logicalop=tokenquery[0];
+		String logicalop=tokenquery[0];//l'operatore logico è il primo operatore che deve essere inserito
 		if((logicalop.equals("$and")|| logicalop.equals("$or"))) {
 			String query1=tokenquery[1];
 			String query2=tokenquery[2];

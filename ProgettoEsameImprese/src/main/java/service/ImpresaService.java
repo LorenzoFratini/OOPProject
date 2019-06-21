@@ -29,7 +29,7 @@ public class ImpresaService implements Filter<Impresa,Object>{
 	final String DELIMITER=";";
 	private ArrayList<Impresa> imprese=new ArrayList<Impresa>();
 	private String type[]=new String[9];
-	private String Descrizione[]=new String[9];
+	private String Descrizione[]=new String[9];//array che verrà utilizzato per memorizzare le info della prima riga del dataset
 	private UseFilter<Impresa> utils=new UseFilter<Impresa>();
 	
 	//Metodi
@@ -80,7 +80,7 @@ public class ImpresaService implements Filter<Impresa,Object>{
 	 * @return<strong>metdat</strong> Restituisce un ArrayList di {@link Metadati}.
 	 */
 	public ArrayList<Metadati> getMetadati() {
-		 Field fld[] = Impresa.class.getDeclaredFields();
+		 Field fld[] = Impresa.class.getDeclaredFields();//array che memorizza i nomi dei campi della classe impresa e il loro tipo
 		 ArrayList<Metadati> metdat=new ArrayList<Metadati>();
 		 Impresa imp=new Impresa();
 		 for (int i = 0; i < fld.length; i++)

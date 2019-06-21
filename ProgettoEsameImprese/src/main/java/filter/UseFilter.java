@@ -15,7 +15,7 @@ import java.util.Collection;
 public class UseFilter<T> {
 	
 
-	/** Metodo che confronta due strignhe oppure due valori numerici rispetto ad un operatore 
+	/** Metodo che confronta due stringhe oppure due valori numerici rispetto ad un operatore 
 	 * @param value Primo valore di confronto
 	 * @param operator	Operatore rispetto cui si vogliono confrontare i valori
 	 * @param th Secondo valore di confronto
@@ -58,8 +58,10 @@ public class UseFilter<T> {
 		Collection<T> out = new ArrayList<T>();
 		for(T item:src) {
 			try {
+				//memorizzo il nome del metodo da lanciare
 				Method m = item.getClass().getMethod("get"+fieldName.substring(0, 1).toUpperCase()+fieldName.substring(1),null);
 				try {
+					//memorizzo il valore del metodo lanciato
 					Object tmp = m.invoke(item);
 					if(UseFilter.check(tmp, operator, value))
 						out.add(item);

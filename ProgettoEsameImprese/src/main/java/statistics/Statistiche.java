@@ -100,8 +100,8 @@ public class Statistiche implements Operation{
 	}
 	
 	
-	//Questo metodo calcola la deviazione standard dei valori in base al campo che si passa nella richiesta
-	/**
+	
+	/** Questo metodo calcola la deviazione standard dei valori in base al campo che si passa nella richiesta
 	 *@throws IllegalAccessException se si vuole ottenere un metodo get di un campo inesistente.
 	 * @throws IllegalArgumentException se il nome del campo passato è errato.
 	 * @throws NoSuchMethodException se il metodo get ottenuto a seguito del passaggio del campo è inesistente.
