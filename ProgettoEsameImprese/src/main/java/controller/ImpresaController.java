@@ -42,7 +42,7 @@ public class ImpresaController {
 	@Autowired
 	ImpresaService impserv;
 	
-	//Metodi
+	  //Metodi
 	
 	
 	/**Metodo ausiliario per verificare se il nome del campo inserito per il filtraggio è corretto.
@@ -64,7 +64,7 @@ public class ImpresaController {
 	}
 	
 	
-	/**Metodo ausiliario se l'operatore utilizzato nella richiesta è valido.
+	/**Metodo ausiliario per verificare se l'operatore utilizzato nella richiesta è valido.
 	 * @param operatore Operatore che si vuole verificare.
 	 * @throws RuntimeException se l'operatore inserito non è corretto.
 	 */
