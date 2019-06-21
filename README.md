@@ -66,7 +66,7 @@ E' possibile inserire filtri su massimo due campi del dataset (legati da un oper
 il valore/i di filtraggio (nel caso di un operatore $bt vanno specificati gli estermi dell'intervallo separati da una "," ). <br/>
 Se si inserisce un campo di tipo String ragionevolmente non va specificato l'operatore condizionale, ma solo il campo e il valore. <br>
 Si utilizza come separatore di query il ";" e come sepatore interno alla query i ":". <br>
-Se si vogliono inserire i filtri sulla parte delle occorrenze i campi utilizzabili sono solo _CodAteco_ (codice Ateco) e _NumOcc_ (numero occorrenze)
+Se si vogliono inserire i filtri sulle occorrenze i campi utilizzabili sono solo _CodAteco_ (codice Ateco) e _NumOcc_ (numero occorrenze)
 <br><br>**Sintassi**
 
 - Filtro su un solo campo <br> 
@@ -89,15 +89,27 @@ Una volta avviata l'applicazione, per verificare il funzionamento del programma 
 | http://localhost:8081/metadata | Restituzione metadati |
 | http://localhost:8081/data | Restituzione di tutti i dati |
 | http://localhost:8081/data?filter=NumImp:$gt:30 | Restituzione di tutti i dati con un numero di imprese maggiore di 30 |
-| http://localhost:8081/data?filter=$and;NumImp:$bt:10,40;TotAdd:$gt:15 | Restituzione di tutti i i dati con un numeri di imprese compreso fra 10 e 40 e con un totale di addetti maggiore di 15 |
+| http://localhost:8081/data?filter=$and;NumImp:$bt:10,40;TotAdd:$gt:15 | Restituzione di tutti i i dati con un numero di imprese compreso fra 10 e 40 e con un totale di addetti maggiore di 15 |
 | http://localhost:8081/data?filter=$and;NumImp:$bt:10,40;Dim:Micro | Restituzione di tutti i dati con un numero di imprese compreso fra 10 e 40 e con dimensione "Micro" |
 | http://localhost:8081/stats?field=NumImp | Restituzione delle statistiche rispetto al campo NumImp considerando l'intero dataset |
 | http://localhost:8081/stats?field=NumImp&filter=TotAdd:$gt:20 | Restituzione delle statistiche rispetto al campo NumImp considerando solo le imprese con un totale addetti maggiore di 20 |
 | http://localhost:8081/stats?field=NumImp&filter=$and;TotAdd:$bt:10,40;Dim:Micro | Restituzione delle statistiche rispetto al campo NumImp considerando sole le imprese con un totale addetti compreso fra 10 e 40 e con dimensione "Micro" |
-| http://localhost:8081/stats/occorrenze | Restituisce le occorrenze di tutti i codici ateco specificando anche la descrizione dell'impresa |
+| http://localhost:8081/stats/occorrenze | Restituisce le occorrenze di tutti i codici Ateco specificando anche la descrizione dell'impresa |
 | http://localhost:8081/stats/occorrenze?filter=CodAteco:1620 | Restituisce le occorrenze della sola impresa con CodAteco=1620 |
 | http://localhost:8081/stats/occorrenze?filter=NumOcc:3 | Restituisce le imprese con un numero di occorrenze pari a 3 |
 <br>
 
 
  **NOTA** : per una visione migliore si consiglia di utilizzare un programma che simula richieste HTTP come **_Postman_**
+ 
+ ## Diagrammi UML
+ 
+ ### Diagramma dei casi d'uso
+ ![Use Case Diagram OOP](https://user-images.githubusercontent.com/48387913/59841654-11b3a580-9355-11e9-8c45-95b239c30343.jpg)
+ 
+ ### Diagramma delle sequenze
+ ![Sequence Diagram Progetto OOP](https://user-images.githubusercontent.com/48387913/59842147-352b2000-9356-11e9-8c95-15b61cece4a2.jpg)
+
+### Diagramma delle classi
+![Class Diagram Progetto OOP](https://user-images.githubusercontent.com/48387913/59842309-96eb8a00-9356-11e9-9693-4ecf338f75ee.jpg)
+
